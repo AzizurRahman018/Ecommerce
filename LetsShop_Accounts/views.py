@@ -3,22 +3,25 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
+
 # Create your views here.
 def LOGIN(request):
     if request.method == 'POST':
-                user_name = request.POST.get('username')
-                Password = request.POST.get('password')
-                if len(Password) ==0:
-                    messages.warning(request, "No password Found")
-                    return redirect('login')
+        user_name = request.POST.get('username')
+        Password = request.POST.get('password')
+        if len(Password) == 0:
+            messages.warning(request, "No password Found")
+            return redirect('login')
 
-
-                user =authenticate(username=user_name, password=Password)
-                if user:
-                    login(request, user)
-                    return redirect('home')
-                # print(user)
-                # print('your user name is ',user_name)
+        user = authenticate(username=user_name, password=Password)
+        if user:
+            login(request, user)
+            return redirect('home')
+        if Password != User.password:
+            messages.warning(request, "your password is incorect")
+            return redirect('login')
+        # print(user)
+        # print('your user name is ',user_name)
     return render(request, 'Accounts/login.html')
 
 
@@ -32,7 +35,7 @@ def Registration(request):
         Retype_password = request.POST.get('pass1')
         if user_name is not None:
             for i in user_name:
-                if i == '@' or i== '.' or i== '/':
+                if i == '@' or i == '.' or i == '/':
                     messages.warning(request, "Your username has special charecter ,please remove ")
                     return redirect('registration')
             if User.objects.filter(username=user_name).exists():
@@ -57,3 +60,21 @@ def LOGOUT(request):
     logout(request)
     messages.warning(request, "you are logout")
     return redirect('login')
+
+
+def RESET_PASS(request):
+    if request.method == 'POST':
+            email = request.POST.get('email')
+            Pass = request.POST.get('password')
+            Pass1 = request.POST.get('password1')
+            # if User.objects.filter(username=user_name).exists():
+            if User.objects.filter(email=email) :
+                messages.warning(request, "Your user Found")
+                user = User.objects.get(email=email)
+
+                if Pass == Pass1:
+                    user.set_password(Pass)
+                    user.save()
+                    messages.success(request, "Password reset successful. You can now log in with your new password.")
+                    return redirect('login')
+    return render(request, 'Accounts/reset_pass.html')
