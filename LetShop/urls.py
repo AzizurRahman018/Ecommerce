@@ -8,6 +8,7 @@ urlpatterns = [
      path('admin/', admin.site.urls),
      path('account/', include('LetsShop_Accounts.urls')),
      path('', include('LetsShop_App.urls')),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
