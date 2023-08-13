@@ -1,7 +1,12 @@
+import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.conf import settings
+import uuid
+from .models import *
+from django.core.mail import send_mail
 
 
 # Create your views here.
@@ -16,7 +21,7 @@ def LOGIN(request):
         user = authenticate(username=user_name, password=Password)
         if user:
             login(request, user)
-            return redirect('home')
+            return redirect('user_desh')
         if Password != User.password:
             messages.warning(request, "your password is incorect")
             return redirect('login')
@@ -47,8 +52,19 @@ def Registration(request):
                 if Password == Retype_password:
                     user = User.objects.create_user(first_name=First_name, last_name=Last_name, username=user_name,
                                                     email=Email_address, password=Password)
+
                     user.set_password(Password)
-                    user.save()
+
+                    auth_token = str(uuid.uuid4())
+                    pro_obj = Profile.objects.create(user=user, auth_token=auth_token)
+                    pro_obj.save()
+
+                    send_mail_reg(Email_address, auth_token)
+
+                    # user.set_password(Password)
+                    # user.save()
+
+                    return redirect('success')
                 else:
                     messages.warning(request, "Your Email is already taken !")
             return redirect('login')
@@ -64,17 +80,48 @@ def LOGOUT(request):
 
 def RESET_PASS(request):
     if request.method == 'POST':
-            email = request.POST.get('email')
-            Pass = request.POST.get('password')
-            Pass1 = request.POST.get('password1')
-            # if User.objects.filter(username=user_name).exists():
-            if User.objects.filter(email=email) :
-                messages.warning(request, "Your user Found")
-                user = User.objects.get(email=email)
+        email = request.POST.get('email')
+        Pass = request.POST.get('password')
+        Pass1 = request.POST.get('password1')
+        # if User.objects.filter(username=user_name).exists():
+        if User.objects.filter(email=email):
+            messages.warning(request, "Your user Found")
+            user = User.objects.get(email=email)
 
-                if Pass == Pass1:
-                    user.set_password(Pass)
-                    user.save()
-                    messages.success(request, "Password reset successful. You can now log in with your new password.")
-                    return redirect('login')
+            if Pass == Pass1:
+                user.set_password(Pass)
+                user.save()
+                messages.success(request, "Password reset successful. You can now log in with your new password.")
+                return redirect('login')
     return render(request, 'Accounts/reset_pass.html')
+
+
+def success(request):
+    return render(request, 'Accounts/success.html')
+
+
+def token_send(request):
+    return render(request, 'Accounts/token_send.html')
+
+
+def error(request):
+    return render(request, 'Accounts/error.html')
+
+
+def send_mail_reg(Email_address, auth_token):
+    subject = 'Your Account Authentication Link'
+    messages = f'Hi , please click the link to verify your account:  http://127.0.0.1:8000/account/verify/{auth_token}'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [Email_address]
+    send_mail(subject, messages, email_from, recipient_list)
+
+
+def verify(request, auth_token):
+    profile_obj = Profile.objects.filter(auth_token=auth_token).first()
+    profile_obj.is_verified = True
+    profile_obj.save()
+    messages.success(request, 'Congratulation Account verify Its Done')
+    return redirect('login')
+
+def user_desh(request):
+    return render(request, 'Accounts/user-desh.html')
