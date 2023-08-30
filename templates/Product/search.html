@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>search</title>
+</head>
+<body>
+<form action="get">
+    {{ form.as_p }}
+    <button> <a href="{% url 'Product_search_view' %}"></a> submit  </button>
+</form>
+<ul>
+    {% for i in prod %}
+    <li>{{i.title}}
+    </li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>

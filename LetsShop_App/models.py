@@ -22,8 +22,14 @@ class SubCategory(models.Model):
     title = models.CharField(max_length=20)
     category = models.ForeignKey(Category,on_delete=models.CASCADE)
     def __str__(self):
-        return str(self.title)
+        return str(f'{self.title},{self.category}')
 
+
+class Super_SubCategory(models.Model):
+    title = models.CharField(max_length=20)
+    SubCategory = models.ForeignKey(SubCategory,on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.title)
 class SIZE(models.Model):
     title = models.CharField(max_length=20)
 
@@ -66,3 +72,5 @@ class Product(models.Model):
     description = models.TextField()
     created_at= models.DateTimeField(auto_now=True)
     updated_at= models.DateTimeField(auto_now=True)
+    def __str__(self):
+            return str(self.title)
