@@ -5,16 +5,24 @@
     <title>search</title>
 </head>
 <body>
-<form action="get">
-    {{ form.as_p }}
-    <button> <a href="{% url 'Product_search_view' %}"></a> submit  </button>
-</form>
-<ul>
-    {% for i in prod %}
-    <li>{{i.title}}
-    </li>
-    {% endfor %}
-</ul>
-
+<div class="container">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <form method="GET">
+        {{ form.as_p }}
+        <button type="submit">submit</button>
+    </form>
+    <ul>
+        {% for product in product %}
+        <li>{{ product.title }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 </body>
 </html>
