@@ -2,6 +2,8 @@ import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+import certifi
+import ssl
 from django.contrib import messages
 from django.conf import settings
 import uuid
@@ -108,12 +110,30 @@ def error(request):
     return render(request, 'Accounts/error.html')
 
 
+def send_mail_registration(Email, auth_token):
+    subject = 'Your Account Authentication Link'
+    message = f'hi , Here is the verification link for your account:  http://127.0.0.1:8000/accounts/verify/{auth_token}'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [Email]
+
+    ssl_context = ssl.create_default_context(cafile=certifi.where())
+
+    ssl._create_default_https_context = ssl._create_unverified_context
+
+    try:
+        with ssl_context:
+            send_mail(subject, message, email_from, recipient_list)
+
+    finally:
+        ssl._create_default_https_context = ssl._create_default_https_context
+
+
 def send_mail_reg(Email_address, auth_token):
     subject = 'Your Account Authentication Link'
-    messages = f'Hi , please click the link to verify your account:  http://127.0.0.1:8000/account/verify/{auth_token}'
+    message = f'Hi , please click the link to verify your account:  http://127.0.0.1:8000/account/verify/{auth_token}'
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [Email_address]
-    send_mail(subject, messages, email_from, recipient_list)
+    send_mail(subject, message, email_from, recipient_list)
 
 
 def verify(request, auth_token):
@@ -122,6 +142,7 @@ def verify(request, auth_token):
     profile_obj.save()
     messages.success(request, 'Congratulation Account verify Its Done')
     return redirect('login')
+
 
 def user_desh(request):
     return render(request, 'Accounts/user-desh.html')

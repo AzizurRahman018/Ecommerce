@@ -122,11 +122,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 EMAIL_BackEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "mitonrahman14@gmail.com"
-EMAIL_HOST_PASSWORD = "asmtabpordtqgmiw"
+EMAIL_HOST_USER = "sydulamin6@gmail.com"
+EMAIL_HOST_PASSWORD ="sbjhjzwakwnslgth"
 
