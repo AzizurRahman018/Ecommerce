@@ -2,7 +2,7 @@ import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-import certifi
+
 import ssl
 from django.contrib import messages
 from django.conf import settings
@@ -116,16 +116,7 @@ def send_mail_registration(Email, auth_token):
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [Email]
 
-    ssl_context = ssl.create_default_context(cafile=certifi.where())
 
-    ssl._create_default_https_context = ssl._create_unverified_context
-
-    try:
-        with ssl_context:
-            send_mail(subject, message, email_from, recipient_list)
-
-    finally:
-        ssl._create_default_https_context = ssl._create_default_https_context
 
 
 def send_mail_reg(Email_address, auth_token):
