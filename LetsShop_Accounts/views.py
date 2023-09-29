@@ -55,18 +55,18 @@ def Registration(request):
                     user = User.objects.create_user(first_name=First_name, last_name=Last_name, username=user_name,
                                                     email=Email_address, password=Password)
 
-                    user.set_password(Password)
-
-                    auth_token = str(uuid.uuid4())
-                    pro_obj = Profile.objects.create(user=user, auth_token=auth_token)
-                    pro_obj.save()
-
-                    send_mail_reg(Email_address, auth_token)
-
                     # user.set_password(Password)
-                    # user.save()
 
-                    return redirect('success')
+                    # auth_token = str(uuid.uuid4())
+                    # pro_obj = Profile.objects.create(user=user, auth_token=auth_token)
+                    # pro_obj.save()
+                    #
+                    # send_mail_reg(Email_address, auth_token)
+
+                    user.set_password(Password)
+                    user.save()
+
+                    return redirect('login')
                 else:
                     messages.warning(request, "Your Email is already taken !")
             return redirect('login')
